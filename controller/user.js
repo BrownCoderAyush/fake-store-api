@@ -42,37 +42,37 @@ module.exports.addUser = (req, res) => {
 				userCount = count;
 			})
 			.then(() => {
+				console.log(req.body)
 				const user = new User({
 					id: userCount + 1,
 					email: req.body.email,
 					username: req.body.username,
 					password: req.body.password,
-					name: {
-						firstname: req.body.firstname,
-						lastname: req.body.lastname,
-					},
-					address: {
-						city: req.body.address.city,
-						street: req.body.address.street,
-						number: req.body.number,
-						zipcode: req.body.zipcode,
-						geolocation: {
-							lat: req.body.address.geolocation.lat,
-							long: req.body.address.geolocation.long,
-						},
-					},
-					phone: req.body.phone,
+					// name: {
+					// 	firstname: req.body.firstname,
+					// 	lastname: req.body.lastname,
+					// },
+					// address: {
+					// 	city: req.body.address.city,
+					// 	street: req.body.address.street,
+					// 	number: req.body.number,
+					// 	zipcode: req.body.zipcode,
+					// 	geolocation: {
+					// 		lat: req.body.address.geolocation.lat,
+					// 		long: req.body.address.geolocation.long,
+					// 	},
+					// },
+					// phone: req.body.phone,
 				});
-				// user.save()
-				//   .then(user => res.json(user))
-				//   .catch(err => console.log(err))
-
-				res.json(user);
+				user.save()
+				  .then(user => res.json(user))
+				  .catch(err => console.log(err))
 			});
 
 		//res.json({id:User.find().count()+1,...req.body})
 	}
 };
+
 
 module.exports.editUser = (req, res) => {
 	if (typeof req.body == undefined || req.params.id == null) {

@@ -1,7 +1,7 @@
 const Cart = require('../model/cart');
 
 module.exports.getAllCarts = (req, res) => {
-	const limit = Number(req.query.limit) || 0;
+	const limit = Number(req.query.limit) || 5;
 	const sort = req.query.sort == 'desc' ? -1 : 1;
 	const startDate = req.query.startdate || new Date('1970-1-1');
 	const endDate = req.query.enddate || new Date();
@@ -9,7 +9,6 @@ module.exports.getAllCarts = (req, res) => {
 	console.log(startDate, endDate);
 
 	Cart.find({
-		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
 	})
 		.select('-_id -products._id')
 		.limit(limit)
