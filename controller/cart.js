@@ -1,7 +1,7 @@
 const Cart = require('../model/cart');
 
 module.exports.getAllCarts = (req, res) => {
-	const limit = Number(req.query.limit) || 5;
+	const limit = Number(req.query.limit) || 0;
 	const sort = req.query.sort == 'desc' ? -1 : 1;
 	const startDate = req.query.startdate || new Date('1970-1-1');
 	const endDate = req.query.enddate || new Date();
@@ -27,7 +27,6 @@ module.exports.getCartsbyUserid = (req, res) => {
 	console.log(startDate, endDate);
 	Cart.find({
 		userId,
-		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
 	})
 		.select('-_id -products._id')
 		.then((carts) => {
@@ -76,19 +75,76 @@ module.exports.addCart = (req, res) => {
 	}
 };
 
-module.exports.editCart = (req, res) => {
-	if (typeof req.body == undefined || req.params.id == null) {
+module.exports.editCart = async (req, res) => {
+	console.log("editting");
+	if (typeof req.body == undefined ) {
 		res.json({
 			status: 'error',
 			message: 'something went wrong! check your sent data',
 		});
 	} else {
-		res.json({
-			id: parseInt(req.params.id),
-			userId: req.body.userId,
-			date: req.body.date,
-			products: req.body.products,
+		let cart = await Cart.findOne({userId: req.body.userId});
+		console.log(cart);
+		if(!cart) {
+			const cartCount = await Cart.find({}).countDocuments();
+			cart = new Cart({
+				id: cartCount+1,
+				userId: req.body.userId,
+				products: [],
+				date: new Date()
+			});
+		}
+		console.log(cart);
+
+		let foundProduct = false;
+		cart.products = cart.products.map(product => {
+			if(product.productId == req.body.productId) {
+				product.quantity++;
+				foundProduct = true;
+			}
+			return product;
 		});
+		if(!foundProduct) {
+			cart.products.push({productId: req.body.productId, quantity: 1});
+		}
+		await cart.save();
+		return res.json(cart);
+	}
+};
+
+module.exports.updateProductToCart = async (req, res) => {
+	console.log("here");
+	if (typeof req.body == undefined ) {
+		res.json({
+			status: 'error',
+			message: 'something went wrong! check your sent data',
+		});
+	} else {
+		console.log(req.body,"body","yha p aya h ");
+		let cart = await Cart.findOne({userId: req.body.userId});
+		console.log(cart);
+		if(!cart) {
+			return res.status(404).json({
+				data: {},
+				message: 'no cart found for the user'
+			})
+		}
+		console.log(cart);
+
+		let foundProduct = false;
+		cart.products = cart.products.map(product => {
+			if(product.productId == req.body.productId) {
+				product.quantity = req.body.quantity;
+				foundProduct = true;
+			}
+			return product;
+		});
+		if(!foundProduct) {
+			cart.products.push({productId: req.body.productId, quantity: req.body.quantity});
+		}
+		cart.products = cart.products.filter(product => product.quantity != 0);
+		await cart.save();
+		return res.json(cart);
 	}
 };
 
