@@ -24,8 +24,8 @@ const userRoute = require('./routes/user');
 const authRoute = require('./routes/auth');
 
 const corsOptions = {
-	origin : 'http://localhost:5173',
-	credentials : true
+	origin: process.env.FRONTEND_URL,
+	credentials: true
 }
 //middleware
 
@@ -46,16 +46,17 @@ app.use('/carts', cartRoute);
 app.use('/users', userRoute);
 app.use('/auth', authRoute);
 
-app.get('/accesstoken',(req,res)=>{
-	console.log('cookie',req.cookies,'cookie here');
+app.get('/accesstoken', (req, res) => {
 	res.json({
-		token : req.cookies['jwt-token']
+		token: req.cookies['jwt-token']
 	})
 })
+
 app.get('/logout', (req, res) => {
 	res.clearCookie('jwt-token');
-	return res.status(200).json({msg: 'logout done'});
+	return res.status(200).json({ msg: 'logout done' });
 })
+
 //mongoose
 mongoose.set('useFindAndModify', false);
 mongoose.set('useUnifiedTopology', true);
@@ -63,7 +64,7 @@ mongoose
 	.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
 	.then(() => {
 		app.listen(port, () => {
-			console.log('Connected at PORT',port);
+			console.log('Connected at PORT', port);
 		});
 	})
 	.catch((err) => {

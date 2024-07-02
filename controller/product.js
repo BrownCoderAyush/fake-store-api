@@ -59,12 +59,7 @@ module.exports.addProduct = (req, res) => {
 			message: 'data is undefined',
 		});
 	} else {
-		// let productCount = 0;
-		// Product.find()
-		//   .countDocuments(function (err, count) {
-		//     productCount = count;
-		//   })
-		//   .then(() => {
+
 		const product = {
 			id: 21,
 			title: req.body.title,
@@ -73,11 +68,9 @@ module.exports.addProduct = (req, res) => {
 			image: req.body.image,
 			category: req.body.category,
 		};
-		// product.save()
-		//   .then(product => res.json(product))
-		//   .catch(err => console.log(err))
+
 		res.json(product);
-		// });
+
 	}
 };
 

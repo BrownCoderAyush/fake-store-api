@@ -6,8 +6,6 @@ module.exports.getAllCarts = (req, res) => {
 	const startDate = req.query.startdate || new Date('1970-1-1');
 	const endDate = req.query.enddate || new Date();
 
-	console.log(startDate, endDate);
-
 	Cart.find({
 	})
 		.select('-_id -products._id')
@@ -24,7 +22,6 @@ module.exports.getCartsbyUserid = (req, res) => {
 	const startDate = req.query.startdate || new Date('1970-1-1');
 	const endDate = req.query.enddate || new Date();
 
-	console.log(startDate, endDate);
 	Cart.find({
 		userId,
 	})
@@ -52,31 +49,20 @@ module.exports.addCart = (req, res) => {
 			message: 'data is undefined',
 		});
 	} else {
-		//     let cartCount = 0;
-		// Cart.find().countDocuments(function (err, count) {
-		//   cartCount = count
-		//   })
-
-		//     .then(() => {
 		const cart = {
 			id: 11,
 			userId: req.body.userId,
 			date: req.body.date,
 			products: req.body.products,
 		};
-		// cart.save()
-		//   .then(cart => res.json(cart))
-		//   .catch(err => console.log(err))
+
 
 		res.json(cart);
-		// })
 
-		//res.json({...req.body,id:Cart.find().count()+1})
 	}
 };
 
 module.exports.editCart = async (req, res) => {
-	console.log("editting");
 	if (typeof req.body == undefined ) {
 		res.json({
 			status: 'error',
@@ -84,7 +70,6 @@ module.exports.editCart = async (req, res) => {
 		});
 	} else {
 		let cart = await Cart.findOne({userId: req.body.userId});
-		console.log(cart);
 		if(!cart) {
 			const cartCount = await Cart.find({}).countDocuments();
 			cart = new Cart({
@@ -94,7 +79,6 @@ module.exports.editCart = async (req, res) => {
 				date: new Date()
 			});
 		}
-		console.log(cart);
 
 		let foundProduct = false;
 		cart.products = cart.products.map(product => {
@@ -113,23 +97,20 @@ module.exports.editCart = async (req, res) => {
 };
 
 module.exports.updateProductToCart = async (req, res) => {
-	console.log("here");
 	if (typeof req.body == undefined ) {
 		res.json({
 			status: 'error',
 			message: 'something went wrong! check your sent data',
 		});
 	} else {
-		console.log(req.body,"body","yha p aya h ");
 		let cart = await Cart.findOne({userId: req.body.userId});
-		console.log(cart);
+		
 		if(!cart) {
 			return res.status(404).json({
 				data: {},
 				message: 'no cart found for the user'
 			})
 		}
-		console.log(cart);
 
 		let foundProduct = false;
 		cart.products = cart.products.map(product => {
